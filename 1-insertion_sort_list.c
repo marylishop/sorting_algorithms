@@ -1,40 +1,46 @@
 #include "sort.h"
 
 /**
- * insertion_sort_list - Sorts a doubly linked list of integers in ascending
- *                       order using an insertion sort algorithm.
- * @list: Doubly linked list of integers to be sorted.
+ * insertion_sort_list - sorts a doubly linked list of integers in ascending
+ * order using an insertion sort algorithm
+ *
+ * @list: doubly linked list of integers to be sorted
  */
 void insertion_sort_list(listint_t **list)
 {
-    if (list == NULL || *list == NULL || (*list)->next == NULL)
-        return;
+	listint_t *lead, *follow, *new, *temp;
 
-    listint_t *current = (*list)->next;
+	if (!list || !(*list) || !((*list)->next))
+		return;
 
-    while (current != NULL)
-    {
-        listint_t *insertion_point = current->prev;
-        int value_to_insert = current->n;
-
-        while (insertion_point != NULL && insertion_point->n > value_to_insert)
-        {
-            insertion_point->next->n = insertion_point->n;
-            insertion_point = insertion_point->prev;
-        }
-
-        if (insertion_point == NULL)
-        {
-            (*list)->n = value_to_insert;
-        }
-        else
-        {
-            insertion_point->next->n = value_to_insert;
-        }
-
-        current = current->next;
-
-        // Print the list after each insertion (optional)
-        print_list(*list);
-    }
+	/* dance begins with 1st from house left following */
+	follow = (*list);
+	/* and next dancer to house right leading */
+	lead = (*list)->next;
+	while (lead)
+	{
+		new = lead->next;
+		while (follow && lead->n < follow->n)
+		{
+			/* lead and follow swap positions */
+			if (follow->prev)
+				follow->prev->next = lead;
+			else
+				/* if lead makes it to house left, now head */
+				*list = lead;
+			if (lead->next)
+				lead->next->prev = follow;
+			temp = lead->next;
+			lead->next = follow;
+			lead->prev = follow->prev;
+			follow->next = temp;
+			follow->prev = lead;
+			print_list(*list);
+			/* compare next pair, flowing to house left */
+			follow = lead->prev;
+		}
+			lead = new;
+			if (lead)
+			follow = lead->prev;
+	}
 }
