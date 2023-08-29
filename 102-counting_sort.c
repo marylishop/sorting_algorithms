@@ -1,5 +1,5 @@
 #include "sort.h"
-#include <stdlib>
+#include <stdlib.h>
 
 /**
  * counting_sort - sorts an array of integers in ascending order using a
@@ -7,69 +7,46 @@
  * @array: array of integers to be sorted
  * @size: amount of elements in array
  */
+void counting_sort(int *array, size_t size)
+{
+	int i, total, max;
+	int *count, *output;
 
-void counting_sort(int *array, size_t size) 
-{
-    if (size <= 1)
-        return;
+	if (!array || size < 2)
+		return;
 
-    int max_value = array[0];
-	for (size_t i = 1; i < size; i++) 
-{
-	if (array[i] > max_value) 
-{
-		max_value = array[i];
-		}
+	max = array[0];
+	for (i = 0; i < (int)size; i++)
+	{
+		if (array[i] > max)
+			max = array[i];
 	}
 
-	int *counting_array = (int *)malloc((max_value + 1) * sizeof(int));
-	if (counting_array == NULL)
+	count = calloc((max + 1), sizeof(int));
+	if (!count)
+		return;
+	for (i = 0; i < (int)size; i++)
+		count[array[i]]++;
 
-	return;
+	for (i = 0, total = 0; i < max + 1; i++)
+	{
+		total = count[i] + total;
+		count[i] = total;
+	}
+	print_array(count, max + 1);
 
-	for (int i = 0; i <= max_value; i++) 
-{
-		counting_array[i] = 0;
-    }
+	output = malloc(sizeof(int) * size);
+	if (!output)
+		return;
 
-		for (size_t i = 0; i < size; i++) 
-{
-		counting_array[array[i]]++;
+	for (i = 0; i < (int)size; i++)
+	{
+		output[count[array[i]] - 1] = array[i];
+		count[array[i]]--; /* needed to handle identical values */
 	}
 
-		size_t index = 0;
-	for (int i = 0; i <= max_value; i++) 
-{
-	while (counting_array[i] > 0) 
-{
-		array[index] = i;
-	counting_array[i]--;
-	index++;
-	}
-}
-
-free(counting_array);
-}
-
-/* Printing array elements */
-void print_array(const int *array, size_t size) 
-{
-	for (size_t i = 0; i < size; i++) {
-	printf("%d", array[i]);
-	if (i != size - 1) {
-	printf(", ");
-		}
-	}
-	printf("\n");
-}
-
-int main(void) 
-{
-	int array[] = {19, 48, 99, 71, 13, 52, 96, 73, 86, 7};
-	size_t n = sizeof(array) / sizeof(array[0]);
-
-	print_array(array, n);
-    counting_sort(array, n);
-	print_array(array, n);
-	return (0);
+	for (i = 0; i < (int)size; i++)
+		array[i] = output[i];
+	free(count);
+	free(output);
 }
